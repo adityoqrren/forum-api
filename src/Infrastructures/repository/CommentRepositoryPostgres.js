@@ -1,0 +1,71 @@
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const CommentRepository = require('../../Domains/comments/CommentRepository');
+const AddedComment = require('../../Domains/comments/entities/AddedComment');
+const DetailComment = require('../../Domains/comments/entities/DetailComment');
+
+class CommentRepositoryPostgres extends CommentRepository {
+  constructor(pool, idGenerator) {
+    super();
+    this._pool = pool;
+    this._idGenerator = idGenerator;
+  }
+
+  async addComment(postComment) {
+    const { threadId, content, owner } = postComment;
+    const id = `comment-${this._idGenerator()}`;
+    const createdAt = new Date();
+
+    const query = {
+      text: 'INSERT INTO comments (id, thread_id, owner, content, created_at) VALUES($1, $2, $3, $4, $5) RETURNING id, content, owner',
+      values: [id, threadId, owner, content, createdAt],
+    };
+
+    const result = await this._pool.query(query);
+
+    return new AddedComment({ ...result.rows[0] });
+  }
+
+  async getCommentById(id) {
+    const query = {
+      text: 'SELECT * FROM comments WHERE comments.id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('comment not found');
+    }
+
+    const row = result.rows[0];
+
+    return new DetailComment({ ...row });
+  }
+
+  async getCommentsByThreadId(threadId) {
+    const query = {
+      text: `SELECT comments.id AS id, users.username AS username, created_at AS date, content, deleted_at FROM comments 
+      INNER JOIN users ON comments.owner = users.id
+      WHERE thread_id = $1 ORDER BY created_at ASC`,
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    const comments = result.rows;
+
+    return comments;
+  }
+
+  async deleteCommentById(id) {
+    const deletedAt = new Date();
+    const query = {
+      text: 'UPDATE comments SET deleted_at = $1 WHERE comments.id = $2',
+      values: [deletedAt, id],
+    };
+
+    await this._pool.query(query);
+  }
+}
+
+module.exports = CommentRepositoryPostgres;
