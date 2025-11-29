@@ -5,3 +5,4 @@ config/database/test.json
 coverage
 .env
 .test.env
+forum-project-server-keypair.pem
