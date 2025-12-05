@@ -39,8 +39,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Reset test DB
       run: |
-        psql -h localhost -U ${{ secrets.PG_USER }} -c "DROP DATABASE IF EXISTS ${{ secrets.PG_DATABASE }};"
-        psql -h localhost -U ${{ secrets.PG_USER }} -c "CREATE DATABASE ${{ secrets.PG_DATABASE }};"
+        psql -h localhost -U ${{ secrets.PG_USER }} -d postgres -c "DROP DATABASE IF EXISTS ${{ secrets.PG_DATABASE }};"
+        psql -h localhost -U ${{ secrets.PG_USER }} -d postgres -c "CREATE DATABASE ${{ secrets.PG_DATABASE }};"
       env:
         PGPASSWORD: ${{ secrets.PG_PASSWORD }}      
     - name: npm install migrate and test
