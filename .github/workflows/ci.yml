@@ -41,7 +41,7 @@ jobs:
       env:
         PGPASSWORD: ${{ secrets.PG_PASSWORD }}
       run: |
-        psql -h localhost -U ${{ secrets.PG_USER }} -d ${{ secrets.PGDATABASE }} -c "\dt"        
+        psql -h localhost -U ${{ secrets.PG_USER }} -d ${{ secrets.PG_DATABASE }} -c "\dt"        
     - name: npm install migrate and test
       run: |
         npm install
