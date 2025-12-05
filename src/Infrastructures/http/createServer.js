@@ -87,6 +87,7 @@ const createServer = async (container) => {
             })
             .code(401);
         }
+        // console.log(`error ${response.stack}`);
         return h.continue;
       }
 

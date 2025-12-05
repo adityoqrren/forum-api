@@ -1,5 +1,4 @@
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
-const DetailComment = require('../../../Domains/comments/entities/DetailComment');
 const AddedReply = require('../../../Domains/replies/entities/AddedReply');
 const PostReply = require('../../../Domains/replies/entities/PostReply');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
@@ -16,14 +15,6 @@ describe('AddReplyUseCase', () => {
       owner: 'user-1',
     };
 
-    const mockCommentById = new DetailComment({
-      id: 'comment-1',
-      thread_id: 'thread-1',
-      owner: 'user-123',
-      content: 'this is comment',
-      created_at: new Date(),
-    });
-
     const mockAddedReply = new AddedReply({
       id: 'reply-123',
       content: 'this is reply 1 content',
@@ -38,8 +29,8 @@ describe('AddReplyUseCase', () => {
     /** mocking needed function */
     mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getCommentById = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockCommentById));
+    mockCommentRepository.verifyCommentById = jest.fn()
+      .mockImplementation(() => Promise.resolve());
     mockReplyRepository.addReply = jest.fn()
       .mockImplementation(() => Promise.resolve(mockAddedReply));
 
@@ -61,7 +52,7 @@ describe('AddReplyUseCase', () => {
     }));
     expect(mockThreadRepository.verifyThreadAvailability)
       .toHaveBeenCalledWith(useCasePayload.threadId);
-    expect(mockCommentRepository.getCommentById).toHaveBeenCalledWith(useCasePayload.commentId);
+    expect(mockCommentRepository.verifyCommentById).toHaveBeenCalledWith(useCasePayload.commentId);
     expect(mockReplyRepository.addReply).toHaveBeenCalledWith(
       new PostReply({
         commentId: useCasePayload.commentId,
