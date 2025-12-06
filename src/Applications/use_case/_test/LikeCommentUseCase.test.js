@@ -1,7 +1,8 @@
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
-const PostCommentLike = require('../../../Domains/comments/entities/PostCommentLike');
+const PostCommentLike = require('../../../Domains/comment_likes/entities/PostCommentLike');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepostiory');
 const LikeCommentUseCase = require('../LikeCommentUseCase');
+const CommentLikeRepository = require('../../../Domains/comment_likes/CommentLikeRepository');
 
 describe('LikeCommentUseCase', () => {
   it('should orchestrating the like comment action correctly', async () => {
@@ -15,22 +16,24 @@ describe('LikeCommentUseCase', () => {
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
+    const mockCommentLikeRepository = new CommentLikeRepository();
 
     /** mocking needed function */
     mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockCommentRepository.verifyCommentById = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getCommentLikeByCommentAndUserId = jest.fn()
+    mockCommentLikeRepository.getCommentLikeByCommentAndUserId = jest.fn()
       .mockImplementation(() => Promise.resolve(null));
-    mockCommentRepository.addCommentLike = jest.fn().mockResolvedValue();
+    mockCommentLikeRepository.addCommentLike = jest.fn().mockResolvedValue();
     mockCommentRepository.increaseLikeCountById = jest.fn().mockResolvedValue();
-    mockCommentRepository.deleteCommentLikeById = jest.fn().mockResolvedValue();
+    mockCommentLikeRepository.deleteCommentLikeById = jest.fn().mockResolvedValue();
     mockCommentRepository.decreaseLikeCountById = jest.fn().mockResolvedValue();
 
     const likeCommentUseCase = new LikeCommentUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
+      commentLikeRepository: mockCommentLikeRepository,
     });
 
     // Action
@@ -41,17 +44,17 @@ describe('LikeCommentUseCase', () => {
       .toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.verifyCommentById)
       .toHaveBeenCalledWith(useCasePayload.commentId);
-    expect(mockCommentRepository.getCommentLikeByCommentAndUserId)
+    expect(mockCommentLikeRepository.getCommentLikeByCommentAndUserId)
       .toHaveBeenCalledWith({
         commentId: useCasePayload.commentId,
         userId: useCasePayload.userId,
       });
-    expect(mockCommentRepository.addCommentLike)
+    expect(mockCommentLikeRepository.addCommentLike)
       .toHaveBeenCalledWith(new PostCommentLike({
         commentId: useCasePayload.commentId,
         userId: useCasePayload.userId,
       }));
-    expect(mockCommentRepository.addCommentLike)
+    expect(mockCommentLikeRepository.addCommentLike)
       .toHaveBeenCalledTimes(1);
     expect(mockCommentRepository.increaseLikeCountById)
       .toHaveBeenCalledWith(useCasePayload.commentId);
@@ -70,22 +73,24 @@ describe('LikeCommentUseCase', () => {
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
+    const mockCommentLikeRepository = new CommentLikeRepository();
 
     /** mocking needed function */
     mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockCommentRepository.verifyCommentById = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getCommentLikeByCommentAndUserId = jest.fn()
+    mockCommentLikeRepository.getCommentLikeByCommentAndUserId = jest.fn()
       .mockImplementation(() => Promise.resolve('commentlike-1'));
-    mockCommentRepository.addCommentLike = jest.fn().mockResolvedValue();
+    mockCommentLikeRepository.addCommentLike = jest.fn().mockResolvedValue();
     mockCommentRepository.increaseLikeCountById = jest.fn().mockResolvedValue();
-    mockCommentRepository.deleteCommentLikeById = jest.fn().mockResolvedValue();
+    mockCommentLikeRepository.deleteCommentLikeById = jest.fn().mockResolvedValue();
     mockCommentRepository.decreaseLikeCountById = jest.fn().mockResolvedValue();
 
     const likeCommentUseCase = new LikeCommentUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
+      commentLikeRepository: mockCommentLikeRepository,
     });
 
     // Action
@@ -96,14 +101,14 @@ describe('LikeCommentUseCase', () => {
       .toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.verifyCommentById)
       .toHaveBeenCalledWith(useCasePayload.commentId);
-    expect(mockCommentRepository.getCommentLikeByCommentAndUserId)
+    expect(mockCommentLikeRepository.getCommentLikeByCommentAndUserId)
       .toHaveBeenCalledWith({
         commentId: useCasePayload.commentId,
         userId: useCasePayload.userId,
       });
-    expect(mockCommentRepository.deleteCommentLikeById)
+    expect(mockCommentLikeRepository.deleteCommentLikeById)
       .toHaveBeenCalledWith('commentlike-1');
-    expect(mockCommentRepository.deleteCommentLikeById)
+    expect(mockCommentLikeRepository.deleteCommentLikeById)
       .toHaveBeenCalledTimes(1);
     expect(mockCommentRepository.decreaseLikeCountById)
       .toHaveBeenCalledWith(useCasePayload.commentId);

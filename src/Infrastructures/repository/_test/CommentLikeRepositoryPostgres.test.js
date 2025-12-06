@@ -1,12 +1,12 @@
 const pool = require('../../database/postgres/pool');
-const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
+const CommentLikeRepositoryPostgres = require('../CommentLikeRepositoryPostgres');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const { minTimeByMinutes } = require('../../../../tests/utils/TimeChanger');
 const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
 
-describe('CommentRepositoryPostgres', () => {
+describe('CommentLikeRepositoryPostgres', () => {
   beforeAll(async () => {
     await UsersTableTestHelper.addUser({ id: 'user-1', username: 'user1' });
     await ThreadsTableTestHelper.addThread({ id: 'thread-1', owner: 'user-1' });
@@ -36,7 +36,7 @@ describe('CommentRepositoryPostgres', () => {
     it('should persist like comment', async () => {
       // Arrange
       const fakeIdGenerator = () => '123'; // stub!
-      const commentRepository = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      const commentRepository = new CommentLikeRepositoryPostgres(pool, fakeIdGenerator);
       const newCommentLike = {
         commentId: 'comment-123',
         userId: 'user-1',
@@ -53,7 +53,7 @@ describe('CommentRepositoryPostgres', () => {
   describe('getCommentLikeByCommentAndUserId', () => {
     it('should return null if not found', async () => {
       // Arrange
-      const commentRepository = new CommentRepositoryPostgres(pool, {});
+      const commentRepository = new CommentLikeRepositoryPostgres(pool, {});
 
       // Act
       const commentId = await commentRepository.getCommentLikeByCommentAndUserId({
@@ -73,7 +73,7 @@ describe('CommentRepositoryPostgres', () => {
         commentId: 'comment-123',
         userId: 'user-1',
       });
-      const commentRepository = new CommentRepositoryPostgres(pool, {});
+      const commentRepository = new CommentLikeRepositoryPostgres(pool, {});
 
       // Act
       const commentId = await commentRepository.getCommentLikeByCommentAndUserId({
@@ -95,7 +95,7 @@ describe('CommentRepositoryPostgres', () => {
         commentId: 'comment-123',
         userId: 'user-1',
       });
-      const commentRepository = new CommentRepositoryPostgres(pool, {});
+      const commentRepository = new CommentLikeRepositoryPostgres(pool, {});
 
       // Act
       await commentRepository.deleteCommentLikeById(fakeCommentLikeId);
@@ -103,33 +103,6 @@ describe('CommentRepositoryPostgres', () => {
       // Assert
       const idCommentLike = await CommentsTableTestHelper.findCommentLikeById(fakeCommentLikeId);
       expect(idCommentLike).toHaveLength(0);
-    });
-  });
-
-  describe('increaseLikeCountById', () => {
-    it('should increase like count', async () => {
-      // Arrange
-      const commentRepository = new CommentRepositoryPostgres(pool, {});
-
-      // Act
-      const likeCount = await commentRepository.increaseLikeCountById('comment-123');
-
-      // Assert
-      expect(likeCount).toStrictEqual(1);
-    });
-  });
-
-  describe('decreaseLikeCountById', () => {
-    it('should decrease like count', async () => {
-      // Arrange
-      await CommentsTableTestHelper.increaseCommentLikeCount('comment-123');
-      const commentRepository = new CommentRepositoryPostgres(pool, {});
-
-      // Act
-      const likeCount = await commentRepository.decreaseLikeCountById('comment-123');
-
-      // Assert
-      expect(likeCount).toStrictEqual(0);
     });
   });
 });

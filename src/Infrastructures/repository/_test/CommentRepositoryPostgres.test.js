@@ -194,4 +194,43 @@ describe('CommentRepositoryPostgres', () => {
       expect(comment[0].deleted_at).not.toBeNull();
     });
   });
+
+  describe('increaseLikeCountById', () => {
+    it('should increase like count', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        threadId: 'thread-1',
+        content: 'this is comment 1 content',
+        owner: 'user-1',
+      });
+      const commentRepository = new CommentRepositoryPostgres(pool, {});
+
+      // Act
+      const likeCount = await commentRepository.increaseLikeCountById('comment-123');
+
+      // Assert
+      expect(likeCount).toStrictEqual(1);
+    });
+  });
+
+  describe('decreaseLikeCountById', () => {
+    it('should decrease like count', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        threadId: 'thread-1',
+        content: 'this is comment 1 content',
+        owner: 'user-1',
+      });
+      await CommentsTableTestHelper.increaseCommentLikeCount('comment-123');
+      const commentRepository = new CommentRepositoryPostgres(pool, {});
+
+      // Act
+      const likeCount = await commentRepository.decreaseLikeCountById('comment-123');
+
+      // Assert
+      expect(likeCount).toStrictEqual(0);
+    });
+  });
 });
