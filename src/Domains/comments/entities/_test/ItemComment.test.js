@@ -34,6 +34,7 @@ describe('an ItemComment entity', () => {
       username: 'user123',
       date: '2024-06-01T12:00:00Z',
       content: 'This is a comment',
+      likeCount: 2,
       deletedAt: null,
     };
 
@@ -45,6 +46,7 @@ describe('an ItemComment entity', () => {
     expect(itemComment.username).toEqual(payload.username);
     expect(itemComment.date).toEqual(payload.date);
     expect(itemComment.content).toEqual(payload.content);
+    expect(itemComment.likeCount).toEqual(payload.likeCount);
     expect(itemComment.deletedAt).toEqual(null);
     expect(itemComment.replies).toHaveLength(0);
   });
@@ -56,6 +58,7 @@ describe('an ItemComment entity', () => {
       username: 'user123',
       date: '2024-06-01T12:00:00Z',
       content: 'This is a comment',
+      likeCount: 2,
       deletedAt: '2024-08-01T12:00:00Z',
     };
 
@@ -67,6 +70,7 @@ describe('an ItemComment entity', () => {
     expect(itemComment.username).toEqual(payload.username);
     expect(itemComment.date).toEqual(payload.date);
     expect(itemComment.content).toEqual(payload.content);
+    expect(itemComment.likeCount).toEqual(payload.likeCount);
     expect(itemComment.deletedAt).toEqual(payload.deletedAt);
     expect(itemComment.replies).toHaveLength(0);
   });

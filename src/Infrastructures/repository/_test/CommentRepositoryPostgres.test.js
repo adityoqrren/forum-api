@@ -14,15 +14,14 @@ describe('CommentRepositoryPostgres', () => {
     await ThreadsTableTestHelper.addThread({ id: 'thread-1', owner: 'user-1' });
   });
 
-  afterEach(async () => {
-    await CommentsTableTestHelper.cleanTable();
-  });
-
   afterAll(async () => {
-    await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
     await pool.end();
+  });
+
+  afterEach(async () => {
+    await CommentsTableTestHelper.cleanTable();
   });
 
   describe('addComment function', () => {
@@ -48,6 +47,34 @@ describe('CommentRepositoryPostgres', () => {
 
       const comment = await CommentsTableTestHelper.findCommentById('comment-123');
       expect(comment).toHaveLength(1);
+    });
+  });
+
+  describe('verifyCommentById function', () => {
+    it('should throw NotFoundError if comment not found', async () => {
+      // Arrange
+      const commentRepository = new CommentRepositoryPostgres(pool, {});
+
+      // Act & Assert
+      await expect(commentRepository.verifyCommentById('comment-111'))
+        .rejects
+        .toThrow(new NotFoundError('comment not found'));
+    });
+
+    it('should verify comment when comment found and not return anything', async () => {
+      // Arrange
+      const dateNow = new Date();
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        threadId: 'thread-1',
+        content: 'this is content',
+        owner: 'user-1',
+        createdAt: dateNow,
+      });
+      const commentRepository = new CommentRepositoryPostgres(pool, {});
+
+      // Act and Assert
+      await expect(commentRepository.verifyCommentById('comment-123')).resolves.not.toThrow(new NotFoundError('comment not found'));
     });
   });
 
@@ -131,6 +158,7 @@ describe('CommentRepositoryPostgres', () => {
         username: 'user1',
         date: commentPayload1.createdAt,
         content: commentPayload1.content,
+        like_count: 0,
         deleted_at: null,
       };
       const comment2Expt = {
@@ -138,6 +166,7 @@ describe('CommentRepositoryPostgres', () => {
         username: 'user1',
         date: commentPayload2.createdAt,
         content: commentPayload2.content,
+        like_count: 0,
         deleted_at: null,
       };
       expect(comments).toHaveLength(2);

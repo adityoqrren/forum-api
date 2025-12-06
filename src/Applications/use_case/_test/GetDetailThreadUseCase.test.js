@@ -34,12 +34,14 @@ describe('GetDetailThreadUseCase', () => {
         username: 'user1',
         date: dateNow,
         content: 'this is comment 1 content',
+        like_count: 0,
       },
       {
         id: 'comment-2',
         username: 'user2',
         date: dateNow,
         content: 'this is comment 2 content',
+        like_count: 2,
       },
     ];
 
@@ -95,6 +97,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'user1',
           date: dateNowInString,
           content: 'this is comment 1 content',
+          likeCount: 0,
           replies: [
             new ItemReply({
               id: 'reply-1',
@@ -110,6 +113,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'user2',
           date: dateNowInString,
           content: 'this is comment 2 content',
+          likeCount: 2,
           replies: [
             new ItemReply({
               id: 'reply-2',
@@ -153,12 +157,14 @@ describe('GetDetailThreadUseCase', () => {
         username: 'user1',
         date: dateCreated,
         content: 'this is comment 1 content',
+        like_count: 0,
       },
       {
         id: 'comment-2',
         username: 'user2',
         date: dateCreated,
         content: 'this is comment 2 content',
+        like_count: 2,
       },
     ];
 
@@ -215,6 +221,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'user1',
           date: dateCreatedInString,
           content: 'this is comment 1 content',
+          likeCount: 0,
           deletedAt: null,
           replies: [
             new ItemReply({
@@ -232,6 +239,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'user2',
           date: dateCreatedInString,
           content: 'this is comment 2 content',
+          likeCount: 2,
           deletedAt: null,
           replies: [
             new ItemReply({
@@ -277,12 +285,14 @@ describe('GetDetailThreadUseCase', () => {
         username: 'user1',
         date: dateCreated,
         content: 'this is comment 1 content',
+        like_count: 0,
         deleted_at: dateDeleted,
       },
       {
         id: 'comment-2',
         username: 'user2',
         date: dateCreated,
+        like_count: 2,
         content: 'this is comment 2 content',
       },
     ];
@@ -339,6 +349,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'user1',
           date: dateCreatedInString,
           content: '**komentar telah dihapus**',
+          likeCount: 0,
           deletedAt: dateDeletedInString,
           replies: [
             new ItemReply({
@@ -356,6 +367,7 @@ describe('GetDetailThreadUseCase', () => {
           date: dateCreatedInString,
           content: 'this is comment 2 content',
           deletedAt: null,
+          likeCount: 2,
           replies: [
             new ItemReply({
               id: 'reply-2',

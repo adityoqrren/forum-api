@@ -304,6 +304,241 @@ describe('/threads endpoint', () => {
     });
   });
 
+  // Like/Unlike comment
+  describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {
+    let threadId;
+    let commentId;
+    let accessTokenUser1;
+    let accessTokenUser2;
+
+    beforeAll(async () => {
+      const server = await createServer(container);
+      // register user1
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          username: 'user1',
+          password: 'secret',
+          fullname: 'User 1',
+        },
+      });
+      // login user1
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'user1',
+          password: 'secret',
+        },
+      });
+
+      const { data: { accessToken: accessToken1 } } = JSON.parse(loginResponse.payload);
+      accessTokenUser1 = accessToken1;
+
+      // register user2
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          username: 'user2',
+          password: 'secret',
+          fullname: 'User 2',
+        },
+      });
+      // login user2
+      const loginResponse2 = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'user2',
+          password: 'secret',
+        },
+      });
+
+      const { data: { accessToken: accessToken2 } } = JSON.parse(loginResponse2.payload);
+      accessTokenUser2 = accessToken2;
+
+      // make thread to comment on
+      const requestPayload = {
+        title: 'this is title',
+        body: 'this is body',
+      };
+
+      const response = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: requestPayload,
+        headers: {
+          Authorization: `Bearer ${accessTokenUser1}`,
+        },
+      });
+      threadId = JSON.parse(response.payload).data.addedThread.id;
+
+      // make comment on thread
+      const requestPayloadComment = {
+        content: 'this is comment content',
+      };
+
+      // Action
+      const responseComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: requestPayloadComment,
+        headers: {
+          Authorization: `Bearer ${accessTokenUser2}`,
+        },
+      });
+
+      commentId = JSON.parse(responseComment.payload).data.addedComment.id;
+    });
+
+    afterAll(async () => {
+      await ThreadTableTestHelper.cleanTable();
+    });
+
+    it('should response 200 after like comment', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${accessTokenUser1}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+
+    it('should response 200 and return detail thread contains liked comment', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread.comments).toBeDefined();
+      expect(responseJson.data.thread.comments).toHaveLength(1);
+      expect(responseJson.data.thread.comments[0].likeCount).toEqual(1);
+    });
+
+    it('should response 200 after unlike comment', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${accessTokenUser1}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+
+    it('should response 200 and return detail thread after unlike comment', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread.comments).toBeDefined();
+      expect(responseJson.data.thread.comments).toHaveLength(1);
+      expect(responseJson.data.thread.comments[0].likeCount).toEqual(0);
+    });
+
+    it('should response 401 when no authentication', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toEqual('Missing authentication');
+    });
+
+    it('should response 404 when thread not found', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/xxx/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${accessTokenUser1}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('thread not found');
+    });
+
+    it('should response 404 when comment not found', async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/xxx/likes`,
+        headers: {
+          Authorization: `Bearer ${accessTokenUser1}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('comment not found');
+    });
+  });
+
   // Add reply
   describe('when POST /threads/{threadId}/comments/{commentId}/replies', () => {
     let threadId;

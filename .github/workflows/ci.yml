@@ -36,7 +36,7 @@ jobs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ matrix.node-version }}   
     - name: npm install migrate and test
       run: |
         npm install
@@ -51,6 +51,11 @@ jobs:
         PGUSER: ${{ secrets.PG_USER }}
         PGPASSWORD: ${{ secrets.PG_PASSWORD }}
         PGDATABASE: ${{ secrets.PG_DATABASE }}
+        PGHOST_TEST: localhost
+        PGPORT_TEST: 5432
+        PGUSER_TEST: ${{ secrets.PG_USER }}
+        PGPASSWORD_TEST: ${{ secrets.PG_PASSWORD }}
+        PGDATABASE_TEST: ${{ secrets.PG_DATABASE }}
         ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
         REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
         ACCESS_TOKEN_AGE: ${{ secrets.ACCESS_TOKEN_AGE }}

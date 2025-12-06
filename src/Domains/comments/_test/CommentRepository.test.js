@@ -7,8 +7,14 @@ describe('CommentRepository interface', () => {
 
     // Action and Assert
     await expect(commentRepository.addComment({})).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
+    await expect(commentRepository.verifyCommentById('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
     await expect(commentRepository.getCommentById('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
     await expect(commentRepository.getCommentsByThreadId('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
     await expect(commentRepository.deleteCommentById('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
+    await expect(commentRepository.addCommentLike({})).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
+    await expect(commentRepository.getCommentLikeByCommentAndUserId('', '')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
+    await expect(commentRepository.deleteCommentLikeById('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
+    await expect(commentRepository.increaseLikeCountById('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
+    await expect(commentRepository.decreaseLikeCountById('')).rejects.toThrow(Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED'));
   });
 });
