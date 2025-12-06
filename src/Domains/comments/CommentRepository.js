@@ -25,21 +25,6 @@ class CommentRepository {
   }
 
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  async addCommentLike(postCommentLike) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
-  }
-
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  async getCommentLikeByCommentAndUserId(id) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
-  }
-
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  async deleteCommentLikeById(id) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
-  }
-
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
   async increaseLikeCountById(id) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
